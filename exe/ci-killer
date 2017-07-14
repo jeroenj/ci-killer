@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+$LOAD_PATH.unshift "lib"
+
+require "thor"
+require "ci/killer"
+
+class CiKillerCLI < Thor
+  desc "digital_ocean TIME_IN_MINUTES", "Kills nodes that have been running for TIME_IN_MINUTES or more"
+  def digital_ocean(time_in_minutes = 0)
+    if ENV["DIGITAL_OCEAN_ACCESS_TOKEN"].to_s == ""
+      $stderr.puts("ERROR: DIGITAL_OCEAN_ACCESS_TOKEN needs to be set")
+      exit 1
+    end
+
+    Ci::Killer::DigitalOcean.kill(time_in_minutes)
+  end
+
+  map %w[--version -v] => :version
+
+  desc "--version, -v", "Print the version"
+  def version
+    puts Ci::Killer::VERSION
+  end
+end
+
+CiKillerCLI.start
